@@ -2,7 +2,7 @@ import streamlit as st
 import joblib
 
 vectorizer = joblib.load('vectorizer.jb')
-model = joblib.load('lr_model.jb')
+model = joblib.load('rf_model.jb')
 
 st.set_page_config(page_title="📰 Fake News Detector", layout="centered")
 
@@ -41,15 +41,13 @@ if st.button("🚀 Analyze News"):
     if news_input.strip():
         transform_input = vectorizer.transform([news_input])
         prediction = model.predict(transform_input)
+        probability = model.predict_proba(transform_input)[0]
 
         if prediction[0] == 1:
-            st.success("✅ The News is **Real**!")
+            st.success(f"✅ The News is **Real**! (Confidence: {probability[1]:.2f})")
             st.balloons()
         else:
-            st.error("❌ The News is **Fake**!")
+            st.error(f"❌ The News is **Fake**! (Confidence: {probability[0]:.2f})")
             st.warning("Be cautious! Double-check the source.")
-    else:
-        st.warning("⚠️ Please enter some text before analyzing.")
 
 st.markdown("---")
-st.markdown("Made with ❤️ using Streamlit | [GitHub](https://github.com/)")
